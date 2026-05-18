@@ -12,7 +12,6 @@ import AddTransactionModal from '../components/AddTransactionModal';
 import StreakBadge from '../components/StreakBadge';
 import BudgetProgressBar from '../components/BudgetProgressBar';
 import HealthScore from '../components/HealthScore';
-import AIAdvice from '../components/AIAdvice';
 import WeeklyReport from '../components/WeeklyReport';
 import { useApp }  from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
