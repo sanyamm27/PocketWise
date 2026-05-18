@@ -66,9 +66,9 @@ const SurviveMode = () => {
   const limitColor = dailyLimit > 300 ? 'text-success' : dailyLimit > 100 ? 'text-primary' : 'text-danger';
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-[#F8FAFF] dark:bg-[#0F1117]">
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 ml-0 lg:ml-[240px]">
         <Navbar />
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-2xl w-full mx-auto space-y-6">
 
@@ -77,8 +77,8 @@ const SurviveMode = () => {
             <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-danger flex items-center justify-center mx-auto mb-4 shadow-card">
               <Zap size={28} className="text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-textPrimary">Survive Till Month End 💪</h1>
-            <p className="text-sm text-textSecondary mt-1">
+            <h1 className="text-2xl font-bold text-[#1A1D2E] dark:text-white">Survive Till Month End 💪</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Enter your available cash and we'll calculate your safe daily limit.
             </p>
           </div>

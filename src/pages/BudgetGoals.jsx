@@ -40,13 +40,13 @@ const BudgetGoals = () => {
   const GOAL_EMOJIS = ['🎯','💻','✈️','🏠','📱','🎓','🚗','💎','🎸','👟'];
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-[#F8FAFF] dark:bg-[#0F1117]">
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 ml-0 lg:ml-[240px]">
         <Navbar />
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-5xl w-full mx-auto space-y-8">
 
-          <h1 className="text-2xl font-bold text-textPrimary">Budget & Goals</h1>
+          <h1 className="text-2xl font-bold text-[#1A1D2E] dark:text-white">Budget &amp; Goals</h1>
 
           {/* ── My Budgets ───────────────────────────────────────────────── */}
           <section>

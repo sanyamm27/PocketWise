@@ -88,14 +88,14 @@ const AddTransactionModal = ({ isOpen, onClose }) => {
       aria-label="Add transaction"
     >
       {/* ── Modal Card ──────────────────────────────────────────────────── */}
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-modal animate-slide-up overflow-hidden">
+      <div className="w-full max-w-md bg-white dark:bg-[#1A1D2E] rounded-2xl shadow-modal animate-slide-up overflow-hidden">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-          <h2 className="text-base font-bold text-textPrimary">Add Entry</h2>
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-gray-700">
+          <h2 className="text-base font-bold text-[#1A1D2E] dark:text-white">Add Entry</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-btn text-textSecondary hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-btn text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             aria-label="Close modal"
           >
             <X size={18} />
@@ -105,7 +105,7 @@ const AddTransactionModal = ({ isOpen, onClose }) => {
         <div className="px-6 py-5 space-y-5">
 
           {/* ── Type Toggle ──────────────────────────────────────────────── */}
-          <div className="flex rounded-btn overflow-hidden border border-gray-200 p-1 gap-1 bg-gray-50">
+          <div className="flex rounded-btn overflow-hidden border border-gray-200 dark:border-gray-700 p-1 gap-1 bg-gray-50 dark:bg-[#13151F]">
             {['expense', 'income'].map((t) => (
               <button
                 key={t}
@@ -115,7 +115,7 @@ const AddTransactionModal = ({ isOpen, onClose }) => {
                     ? t === 'income'
                       ? 'bg-success text-white shadow-sm'
                       : 'bg-danger text-white shadow-sm'
-                    : 'text-textSecondary hover:text-textPrimary'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-[#1A1D2E] dark:hover:text-white'
                 }`}
               >
                 {t === 'income' ? '+ Income' : '− Expense'}
@@ -157,8 +157,8 @@ const AddTransactionModal = ({ isOpen, onClose }) => {
                   className={`flex flex-col items-center gap-1 py-2.5 px-1 rounded-btn
                               text-xs font-medium border transition-all duration-150 ${
                     form.category === label
-                      ? 'border-primary bg-blue-50 text-primary'
-                      : 'border-gray-100 bg-gray-50 text-textSecondary hover:border-gray-200 hover:bg-gray-100'
+                      ? 'border-primary bg-blue-50 dark:bg-[#4A90E2]/10 text-primary'
+                      : 'border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-[#13151F] text-gray-500 dark:text-gray-400 hover:border-gray-200 dark:hover:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                   aria-pressed={form.category === label}
                 >

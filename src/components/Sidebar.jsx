@@ -8,9 +8,10 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Wallet, LayoutDashboard, ArrowLeftRight,
-  Target, BarChart2, Zap, User, LogOut,
+  Target, BarChart2, Zap, User, LogOut, X, Moon, Sun
 } from 'lucide-react';
-import { useApp } from '../context/AppContext';
+import { useApp }  from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 
 // ─── Nav Items ────────────────────────────────────────────────────────────────
 const NAV_ITEMS = [
@@ -24,62 +25,70 @@ const NAV_ITEMS = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 const Sidebar = () => {
-  const { user, logoutUser } = useApp();
-  const navigate = useNavigate();
+  const { user, isMobileMenuOpen, setIsMobileMenuOpen, darkMode, toggleDarkMode } = useApp();
+  const { logout } = useAuth();
+  const navigate   = useNavigate();
 
   const initials = user?.displayName
     ? user.displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
     : 'PW';
 
-  const handleLogout = () => {
-    logoutUser();
-    navigate('/');
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
   };
 
   return (
     <aside
-      className="hidden lg:flex flex-col w-60 min-h-screen bg-white border-r border-gray-100 shrink-0"
+      className={`fixed top-0 left-0 h-screen w-[240px] bg-white dark:bg-[#13151F] border-r border-[#F1F5F9] dark:border-gray-800 shadow-[4px_0_24px_rgba(0,0,0,0.04)] overflow-y-auto z-50 flex-col transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0 flex' : '-translate-x-full lg:flex hidden'}`}
       aria-label="Sidebar navigation"
     >
       {/* ── Logo ──────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-gray-100">
-        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-sm">
-          <Wallet size={18} className="text-white" />
+      <div className="flex items-center justify-between pt-6 pb-8 px-5">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4A90E2] to-[#7C6FF7] flex items-center justify-center shadow-md">
+            <span className="text-white font-bold text-lg">PW</span>
+          </div>
+          <span className="font-bold text-lg tracking-tight">
+            <span className="text-[#1A1D2E] dark:text-white">Pocket</span>
+            <span className="text-[#4A90E2]">Wise</span>
+          </span>
         </div>
-        <span className="text-[17px] font-bold tracking-tight">
-          <span className="text-textPrimary">Pocket</span>
-          <span className="text-primary">Wise</span>
-        </span>
+        <button 
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="lg:hidden p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white rounded-lg transition-colors"
+        >
+          <X size={20} />
+        </button>
       </div>
 
       {/* ── Navigation ────────────────────────────────────────────────── */}
-      <nav className="flex-1 px-3 py-4 flex flex-col gap-1" aria-label="Sidebar links">
+      <nav className="flex-1 px-3 py-2 flex flex-col gap-1.5" aria-label="Sidebar links">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-btn text-sm font-medium
-               transition-all duration-150 group ${
+              `flex items-center mx-2 px-4 py-3 rounded-xl text-sm transition-all duration-150 group ${
                  isActive
-                   ? 'bg-primary text-white shadow-sm'
-                   : 'text-textSecondary hover:bg-gray-50 hover:text-textPrimary'
+                   ? 'bg-gradient-to-r from-[#EEF6FF] to-[#F0EEFF] dark:from-[#4A90E2]/10 dark:to-[#7C6FF7]/10 text-[#4A90E2] font-semibold border-l-[3px] border-[#4A90E2]'
+                   : 'text-gray-500 hover:bg-gray-50 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white border-l-[3px] border-transparent font-medium'
                }`
             }
           >
             {({ isActive }) => (
               <>
                 <Icon
-                  size={18}
-                  className={`shrink-0 transition-colors ${
-                    isActive ? 'text-white' : 'text-textSecondary group-hover:text-primary'
+                  size={20}
+                  className={`shrink-0 mr-3 transition-colors ${
+                    isActive ? 'text-[#4A90E2]' : 'text-gray-400 group-hover:text-gray-600'
                   }`}
                 />
                 <span>{label}</span>
 
                 {/* Survive Mode warning dot */}
                 {label === 'Survive Mode' && !isActive && (
-                  <span className="ml-auto w-2 h-2 rounded-full bg-danger animate-pulse-soft" />
+                  <span className="ml-auto w-2 h-2 rounded-full bg-red-500 animate-pulse-soft shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
                 )}
               </>
             )}
@@ -88,34 +97,49 @@ const Sidebar = () => {
       </nav>
 
       {/* ── User Info + Logout ────────────────────────────────────────── */}
-      <div className="px-3 py-4 border-t border-gray-100">
+      <div className="px-5 py-6 border-t border-[#F1F5F9] dark:border-gray-800">
         {/* User card */}
-        <div className="flex items-center gap-3 px-2 py-2 mb-2">
+        <div className="flex items-center gap-3 mb-4">
           <div
-            className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-accent
-                       flex items-center justify-center text-white text-xs font-bold shrink-0"
+            className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-500
+                       flex items-center justify-center text-white text-sm font-bold shrink-0"
           >
             {initials}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-textPrimary truncate">
+            <p className="text-sm font-semibold text-[#1A1D2E] dark:text-white truncate">
               {user?.displayName ?? 'Student'}
             </p>
-            <p className="text-xs text-textSecondary truncate">
+            <p className="text-xs text-gray-400 truncate">
               {user?.college ?? 'PocketWise User'}
             </p>
           </div>
         </div>
 
+        {/* Dark Mode Toggle */}
+        <button onClick={toggleDarkMode}
+          className="flex items-center gap-3 w-full 
+          px-4 py-3 rounded-xl transition-all mb-2
+          text-gray-500 hover:bg-gray-50
+          dark:text-gray-400 dark:hover:bg-gray-800">
+          {darkMode 
+            ? <Sun size={20} className="text-yellow-400"/> 
+            : <Moon size={20} className="text-blue-400"/>}
+          <span className="text-sm font-medium">
+            {darkMode ? 'Light Mode' : 'Dark Mode'}
+          </span>
+        </button>
+
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-btn
-                     text-sm font-medium text-textSecondary
-                     hover:bg-red-50 hover:text-danger
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl
+                     text-sm font-medium text-red-400
+                     hover:bg-red-50 hover:text-red-600
+                     dark:hover:bg-red-500/10 dark:hover:text-red-400
                      transition-colors duration-150"
         >
-          <LogOut size={16} />
+          <LogOut size={20} />
           <span>Log out</span>
         </button>
       </div>

@@ -7,6 +7,7 @@ import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import DonutChart from '../components/DonutChart';
 import BarChart from '../components/BarChart';
+import SpendingHeatmap from '../components/SpendingHeatmap';
 import { useApp } from '../context/AppContext';
 import { formatCurrency, getMoneyPersonality, getCategoryEmoji } from '../utils/helpers';
 
@@ -73,13 +74,15 @@ const Insights = () => {
     .sort((a, b) => b.amount - a.amount)[0];
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-[#F8FAFF] dark:bg-[#0F1117]">
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 ml-0 lg:ml-[240px]">
         <Navbar />
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-5xl w-full mx-auto space-y-6">
 
-          <h1 className="text-2xl font-bold text-textPrimary">PocketWise Insights 📊</h1>
+          <h1 className="text-2xl font-bold text-[#1A1D2E] dark:text-white">PocketWise Insights 📊</h1>
+
+          <SpendingHeatmap />
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* ── Donut Chart ────────────────────────────────────────────── */}
@@ -98,13 +101,13 @@ const Insights = () => {
           </div>
 
           {/* ── Money Personality ───────────────────────────────────────── */}
-          <div className="pw-card bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-100">
+          <div className="pw-card bg-gradient-to-br from-blue-50 to-purple-50 dark:from-[#4A90E2]/10 dark:to-[#7C6FF7]/10 border border-blue-100 dark:border-gray-700">
             <div className="flex items-center gap-4">
               <span className="text-5xl">{personality.emoji}</span>
               <div>
                 <p className="text-xs font-bold text-primary uppercase tracking-wider mb-1">Your Money Personality</p>
-                <h2 className="text-xl font-bold text-textPrimary">{personality.label}</h2>
-                <p className="text-sm text-textSecondary mt-1">{personality.description}</p>
+                <h2 className="text-xl font-bold text-[#1A1D2E] dark:text-white">{personality.label}</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{personality.description}</p>
               </div>
             </div>
           </div>

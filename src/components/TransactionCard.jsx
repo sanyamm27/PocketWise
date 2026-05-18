@@ -18,15 +18,15 @@ const TransactionCard = ({ id, name, amount, category, date, type }) => {
 
   return (
     <div
-      className={`flex items-center gap-4 px-4 py-3.5 bg-white rounded-card
+      className={`flex items-center gap-4 px-4 py-3.5 bg-white dark:bg-[#1A1D2E] rounded-2xl
                   border border-transparent transition-all duration-200 group
-                  ${hovered ? 'shadow-card-hover border-gray-100 -translate-y-px' : 'shadow-card'}`}
+                  hover:bg-blue-50 dark:hover:bg-[#22263A] ${hovered ? 'shadow-md border-blue-100 dark:border-blue-900 -translate-y-0.5' : 'shadow-sm'}`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* ── Category Emoji Bubble ──────────────────────────────────────── */}
       <div
-        className={`w-11 h-11 rounded-full flex items-center justify-center
+        className={`w-[44px] h-[44px] rounded-xl flex items-center justify-center
                     text-xl shrink-0 ${colorClass}`}
         aria-label={category}
       >
@@ -35,8 +35,8 @@ const TransactionCard = ({ id, name, amount, category, date, type }) => {
 
       {/* ── Name + Date ────────────────────────────────────────────────── */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-textPrimary truncate">{name}</p>
-        <p className="text-xs text-textSecondary mt-0.5">
+        <p className="text-sm font-semibold text-[#1A1D2E] dark:text-white truncate">{name}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
           {category} · {formatDate(date)}
         </p>
       </div>
@@ -44,7 +44,7 @@ const TransactionCard = ({ id, name, amount, category, date, type }) => {
       {/* ── Amount + Delete ────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 shrink-0">
         <span
-          className={`text-sm font-bold ${isIncome ? 'text-success' : 'text-danger'}`}
+          className={`text-lg font-bold ${isIncome ? 'text-success' : 'text-danger'}`}
         >
           {isIncome ? '+' : '-'}{formatCurrency(amount)}
         </span>
@@ -52,8 +52,8 @@ const TransactionCard = ({ id, name, amount, category, date, type }) => {
         {/* Delete — visible on hover */}
         <button
           onClick={() => deleteTransaction(id)}
-          className={`p-1.5 rounded-btn text-textSecondary
-                      hover:bg-red-50 hover:text-danger
+          className={`p-1.5 rounded-btn text-gray-400 dark:text-gray-500
+                      hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-danger
                       transition-all duration-150
                       ${hovered ? 'opacity-100' : 'opacity-0'}`}
           aria-label={`Delete transaction: ${name}`}

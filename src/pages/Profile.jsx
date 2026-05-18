@@ -102,16 +102,16 @@ const Profile = () => {
   const initials = (user?.displayName ?? 'PW').split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-[#F8FAFF] dark:bg-[#0F1117]">
       <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 ml-0 lg:ml-[240px]">
         <Navbar />
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-2xl w-full mx-auto space-y-6">
 
-          <h1 className="text-2xl font-bold text-textPrimary">Profile & Settings</h1>
+          <h1 className="text-2xl font-bold text-[#1A1D2E] dark:text-white">Profile & Settings</h1>
 
           {/* ── Avatar + Name Card ───────────────────────────────────────── */}
-          <div className="pw-card flex flex-col items-center gap-4 text-center relative">
+          <div className="pw-card flex flex-col items-center gap-4 text-center relative dark:bg-[#1A1D2E]">
             {/* Edit toggle */}
             {!editing ? (
               <button onClick={() => setEditing(true)}
