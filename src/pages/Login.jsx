@@ -118,8 +118,12 @@ const Login = () => {
     setError('');
     setGoogleLoading(true);
     try {
-      const user = await loginWithGoogle();
-      await redirectUser(user);
+      const { isExisting } = await loginWithGoogle();
+      if (isExisting) {
+        navigate('/dashboard');   // returning user — skip onboarding
+      } else {
+        navigate('/onboarding');  // new user — complete profile first
+      }
     } catch (err) {
       setError(friendlyError(err.code));
     } finally {

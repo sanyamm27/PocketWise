@@ -24,11 +24,19 @@ export function AuthProvider({ children }) {
   const [user,    setUser]    = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // ── Check if user profile is complete (has college set) ───────────────────
+  const checkUserExists = async (uid) => {
+    const ref  = doc(db, 'users', uid)
+    const snap = await getDoc(ref)
+    return snap.exists() && snap.data().college !== ''
+  }
+
   // ── Google Login ────────────────────────────────────────────────────────────
   const loginWithGoogle = async () => {
-    const result = await signInWithPopup(auth, googleProvider)
-    await createUserProfile(result.user)
-    return result.user
+    const result   = await signInWithPopup(auth, googleProvider)
+    const isExisting = await checkUserExists(result.user.uid)
+    await createUserProfile(result.user)   // idempotent — no-op if already exists
+    return { user: result.user, isExisting }
   }
 
   // ── Email Signup ────────────────────────────────────────────────────────────
@@ -83,6 +91,7 @@ export function AuthProvider({ children }) {
     loginWithEmail,
     signupWithEmail,
     logout,
+    checkUserExists,
   }
 
   return (
