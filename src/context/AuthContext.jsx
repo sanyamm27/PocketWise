@@ -21,8 +21,9 @@ export const useAuth = () => useContext(AuthContext)
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function AuthProvider({ children }) {
-  const [user,    setUser]    = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user,        setUser]        = useState(null)
+  const [userProfile, setUserProfile] = useState(null)
+  const [loading,     setLoading]     = useState(true)
 
   // ── Check if user profile is complete (has college set) ───────────────────
   const checkUserExists = async (uid) => {
@@ -91,17 +92,44 @@ export function AuthProvider({ children }) {
     }
   }
 
-  // ── Auth State Listener ─────────────────────────────────────────────────────
+  // ── Auth State Listener ──────────────────────────────────────────────────────────
+  // Fetches fresh Firestore profile on every login; clears on logout.
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser)
+    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser)
+        // Always fetch fresh from Firestore so every user sees their own data
+        const ref  = doc(db, 'users', firebaseUser.uid)
+        const snap = await getDoc(ref)
+        if (snap.exists()) {
+          setUserProfile(snap.data())
+        } else {
+          // First-time user — create profile document
+          const newProfile = {
+            uid:           firebaseUser.uid,
+            name:          firebaseUser.displayName || '',
+            email:         firebaseUser.email,
+            college:       '',
+            monthlyBudget: 5000,
+            createdAt:     new Date().toISOString(),
+          }
+          await setDoc(ref, newProfile)
+          setUserProfile(newProfile)
+        }
+      } else {
+        // Logged out — clear both user and profile so next user starts fresh
+        setUser(null)
+        setUserProfile(null)
+      }
       setLoading(false)
     })
-    return unsub
+    return () => unsub()
   }, [])
 
   const value = {
     user,
+    userProfile,
+    setUserProfile,
     loading,
     loginWithGoogle,
     loginWithEmail,

@@ -7,13 +7,17 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wallet, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const INCOME_SOURCES = ['Pocket Money', 'Part-time Job', 'Scholarship', 'Freelance'];
 
 const TOTAL_STEPS = 3;
 
 const Onboarding = () => {
-  const { setMonthlyBudget, loginUser } = useApp();
+  const { setMonthlyBudget } = useApp();
+  const { user, setUserProfile } = useAuth();
   const navigate = useNavigate();
 
   const [step,    setStep]    = useState(1);
@@ -22,6 +26,7 @@ const Onboarding = () => {
   const [budget,  setBudget]  = useState(8000);
   const [sources, setSources] = useState([]);
   const [errors,  setErrors]  = useState({});
+  const [saving,  setSaving]  = useState(false);
 
   // ── Validation ────────────────────────────────────────────────────────────
   const validate = () => {
@@ -42,13 +47,30 @@ const Onboarding = () => {
       prev.includes(src) ? prev.filter((s) => s !== src) : [...prev, src]
     );
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!validate()) return;
     if (step < TOTAL_STEPS) { setStep((s) => s + 1); return; }
-    // Final step — save and go
-    setMonthlyBudget(budget);
-    loginUser({ displayName: name.trim(), college: college.trim(), incomeSources: sources });
-    navigate('/dashboard');
+
+    // Final step — save to Firestore under this user's uid
+    setSaving(true);
+    try {
+      const updatedProfile = {
+        name:           name.trim(),
+        college:        college.trim(),
+        monthlyBudget:  Number(budget),
+        incomeSources:  sources,
+        updatedAt:      new Date().toISOString(),
+      };
+      await updateDoc(doc(db, 'users', user.uid), updatedProfile);
+      // Update budget in AppContext (local + Firestore already done above)
+      setMonthlyBudget(Number(budget));
+      // Update AuthContext profile immediately so UI reflects new data
+      setUserProfile(prev => ({ ...prev, ...updatedProfile }));
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Onboarding save failed:', err);
+      setSaving(false);
+    }
   };
 
   const pctWidth = `${(step / TOTAL_STEPS) * 100}%`;
@@ -214,9 +236,12 @@ const Onboarding = () => {
             )}
             <button
               onClick={handleNext}
-              className="pw-btn-primary flex-1 py-3 gap-2"
+              disabled={saving}
+              className="pw-btn-primary flex-1 py-3 gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {step === TOTAL_STEPS ? "Let's Go 🚀" : 'Next'}
+              {step === TOTAL_STEPS
+                ? saving ? 'Saving...' : "Let's Go 🚀"
+                : 'Next'}
               {step < TOTAL_STEPS && <ArrowRight size={16} />}
             </button>
           </div>

@@ -25,13 +25,16 @@ const NAV_ITEMS = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 const Sidebar = () => {
-  const { user, isMobileMenuOpen, setIsMobileMenuOpen, darkMode, toggleDarkMode } = useApp();
-  const { logout } = useAuth();
-  const navigate   = useNavigate();
+  const { isMobileMenuOpen, setIsMobileMenuOpen, darkMode, toggleDarkMode } = useApp();
+  const { user, userProfile, logout } = useAuth();
+  const navigate = useNavigate();
 
-  const initials = user?.displayName
-    ? user.displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-    : 'PW';
+  // Dynamic per-user display values
+  const displayName = userProfile?.name || user?.displayName || 'Student';
+  const college     = userProfile?.college || 'PocketWise User';
+  const initials    = displayName
+    .trim().split(' ').filter(Boolean)
+    .map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'PW';
 
   const handleLogout = async () => {
     await logout();
@@ -108,10 +111,10 @@ const Sidebar = () => {
           </div>
           <div className="min-w-0">
             <p className="text-sm font-semibold text-[#1A1D2E] dark:text-white truncate">
-              {user?.displayName ?? 'Student'}
+              {displayName}
             </p>
             <p className="text-xs text-gray-400 truncate">
-              {user?.college ?? 'PocketWise User'}
+              {college}
             </p>
           </div>
         </div>

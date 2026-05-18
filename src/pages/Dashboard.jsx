@@ -14,7 +14,8 @@ import BudgetProgressBar from '../components/BudgetProgressBar';
 import HealthScore from '../components/HealthScore';
 import AIAdvice from '../components/AIAdvice';
 import WeeklyReport from '../components/WeeklyReport';
-import { useApp } from '../context/AppContext';
+import { useApp }  from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import { formatCurrency, getCategoryEmoji } from '../utils/helpers';
 
 // ─── Greeting helpers ─────────────────────────────────────────────────────────
@@ -34,10 +35,14 @@ const formatName = (name) => {
 };
 
 const Dashboard = () => {
-  const { transactions, user, getTotalIncome, getTotalExpense, getBalance, getTransactionsByCategory, monthlyBudget } = useApp();
+  const { transactions, getTotalIncome, getTotalExpense, getBalance, getTransactionsByCategory, monthlyBudget } = useApp();
+  const { user, userProfile } = useAuth();
   const navigate = useNavigate();
   const [modalOpen,      setModalOpen]      = useState(false);
   const [modalInitType,  setModalInitType]  = useState('expense');
+
+  // Dynamic per-user display name — prefers Firestore profile over Firebase Auth
+  const displayName = userProfile?.name || user?.displayName || null;
 
   const income  = getTotalIncome();
   const expense = getTotalExpense();
@@ -65,7 +70,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
               <h1 className="text-2xl font-bold text-[#1A1D2E] dark:text-white">
-                Good {getTimeOfDay()}, {formatName(user?.displayName)} 👋
+                Good {getTimeOfDay()}, {formatName(displayName)} 👋
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
                 {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}

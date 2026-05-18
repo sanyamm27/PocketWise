@@ -11,7 +11,8 @@ import {
   Wallet, LayoutDashboard, ArrowLeftRight,
   Target, BarChart2, Menu, X,
 } from 'lucide-react';
-import { useApp } from '../context/AppContext';
+import { useApp }  from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 
 // ─── Nav Items ────────────────────────────────────────────────────────────────
 const NAV_LINKS = [
@@ -23,12 +24,14 @@ const NAV_LINKS = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 const Navbar = () => {
-  const { user, setIsMobileMenuOpen } = useApp();
+  const { setIsMobileMenuOpen } = useApp();
+  const { user, userProfile }   = useAuth();
 
-  /** Derive user initials for the avatar bubble */
-  const initials = user?.displayName
-    ? user.displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
-    : 'PW';
+  // Dynamic initials — works for every user
+  const displayName = userProfile?.name || user?.displayName || 'PW';
+  const initials    = displayName
+    .trim().split(' ').filter(Boolean)
+    .map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'PW';
 
   return (
     <header className="sticky top-0 z-40 bg-white dark:bg-[#13151F] border-b border-[#F1F5F9] dark:border-gray-800 shadow-sm">
