@@ -17,11 +17,20 @@ import WeeklyReport from '../components/WeeklyReport';
 import { useApp } from '../context/AppContext';
 import { formatCurrency, getCategoryEmoji } from '../utils/helpers';
 
-const getGreeting = () => {
-  const h = new Date().getHours();
-  if (h < 12) return 'Good Morning';
-  if (h < 17) return 'Good Afternoon';
-  return 'Good Evening';
+// ─── Greeting helpers ─────────────────────────────────────────────────────────
+const getTimeOfDay = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Morning';
+  if (hour < 17) return 'Afternoon';
+  return 'Evening';
+};
+
+const formatName = (name) => {
+  if (!name) return 'there';
+  return name
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
 };
 
 const Dashboard = () => {
@@ -56,7 +65,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div>
               <h1 className="text-2xl font-bold text-[#1A1D2E] dark:text-white">
-                {getGreeting()}, {user?.displayName?.split(' ')[0] ?? 'there'} 👋
+                Good {getTimeOfDay()}, {formatName(user?.displayName)} 👋
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
                 {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}

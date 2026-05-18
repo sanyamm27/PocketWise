@@ -41,16 +41,32 @@ export function AuthProvider({ children }) {
 
   // ── Email Signup ────────────────────────────────────────────────────────────
   const signupWithEmail = async (email, password, name) => {
-    const result = await createUserWithEmailAndPassword(auth, email, password)
-    await updateProfile(result.user, { displayName: name })
-    await createUserProfile(result.user, name)
-    return result.user
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, password)
+      await updateProfile(result.user, { displayName: name })
+      await createUserProfile(result.user, name)
+      return result.user
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') throw new Error('Account already exists. Please login.')
+      if (error.code === 'auth/weak-password')        throw new Error('Password must be at least 6 characters.')
+      if (error.code === 'auth/invalid-email')        throw new Error('Invalid email address.')
+      throw new Error(error.message)
+    }
   }
 
   // ── Email Login ─────────────────────────────────────────────────────────────
   const loginWithEmail = async (email, password) => {
-    const result = await signInWithEmailAndPassword(auth, email, password)
-    return result.user
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password)
+      return result.user
+    } catch (error) {
+      if (error.code === 'auth/user-not-found')     throw new Error('No account found with this email.')
+      if (error.code === 'auth/wrong-password')     throw new Error('Incorrect password.')
+      if (error.code === 'auth/invalid-email')      throw new Error('Invalid email address.')
+      if (error.code === 'auth/invalid-credential') throw new Error('Invalid email or password.')
+      if (error.code === 'auth/too-many-requests')  throw new Error('Too many attempts. Please wait a moment.')
+      throw new Error(error.message)
+    }
   }
 
   // ── Logout ──────────────────────────────────────────────────────────────────

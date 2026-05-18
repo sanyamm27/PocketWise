@@ -148,29 +148,29 @@ const Login = () => {
       let user;
       if (tab === 'login') {
         user = await loginWithEmail(email, password);
+        // Returning email user — check Firestore for onboarding completion
+        await redirectUser(user);
       } else {
         user = await signupWithEmail(email, password, name.trim());
+        // New signup always needs onboarding
+        navigate('/onboarding');
       }
-      await redirectUser(user);
     } catch (err) {
-      setError(friendlyError(err.code));
+      // AuthContext throws Error objects with human-readable .message
+      setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // ── Firebase error → human message ────────────────────────────────────────
+  // ── Firebase error → human message (Google popup only) ───────────────────
+  // Email errors are now handled inside AuthContext and thrown as Error objects.
   const friendlyError = (code) => {
     switch (code) {
-      case 'auth/user-not-found':
-      case 'auth/wrong-password':
-      case 'auth/invalid-credential': return 'Incorrect email or password.';
-      case 'auth/email-already-in-use':  return 'This email is already registered. Try logging in.';
-      case 'auth/weak-password':         return 'Password must be at least 6 characters.';
-      case 'auth/invalid-email':         return 'Please enter a valid email address.';
-      case 'auth/popup-closed-by-user':  return 'Google sign-in was cancelled.';
-      case 'auth/too-many-requests':     return 'Too many attempts. Please wait a moment.';
-      default:                           return 'Something went wrong. Please try again.';
+      case 'auth/popup-closed-by-user': return 'Google sign-in was cancelled.';
+      case 'auth/popup-blocked':        return 'Popup blocked. Please allow popups for this site.';
+      case 'auth/too-many-requests':    return 'Too many attempts. Please wait a moment.';
+      default:                          return 'Something went wrong. Please try again.';
     }
   };
 

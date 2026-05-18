@@ -7,6 +7,23 @@ import { initializeApp } from 'firebase/app'
 import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
+// ─── Env Var Validation ───────────────────────────────────────────────────────
+// Logs clearly which key is missing (visible in browser console on Vercel etc.)
+const requiredEnvVars = [
+  'VITE_FIREBASE_API_KEY',
+  'VITE_FIREBASE_AUTH_DOMAIN',
+  'VITE_FIREBASE_PROJECT_ID',
+  'VITE_FIREBASE_STORAGE_BUCKET',
+  'VITE_FIREBASE_MESSAGING_ID',
+  'VITE_FIREBASE_APP_ID',
+]
+
+requiredEnvVars.forEach(key => {
+  if (!import.meta.env[key]) {
+    console.error(`[PocketWise] Missing Firebase env variable: ${key}`)
+  }
+})
+
 const firebaseConfig = {
   apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
